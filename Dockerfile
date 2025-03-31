@@ -3,11 +3,12 @@ FROM node:14 as frontend-builder
 WORKDIR /frontend
 # Copy frontend package files
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps    # Added legacy-peer-deps flag
+
 # Copy frontend source
 COPY frontend/ ./
-# Build frontend
-RUN npm run build
+# Build frontend with additional error output
+RUN npm run build || (cat /frontend/npm-debug.log && exit 1)
 
 # Stage 2: API Gateway
 FROM node:14
@@ -25,9 +26,6 @@ RUN mkdir -p /app/public
 
 # Copy built frontend from builder stage
 COPY --from=frontend-builder /frontend/build /app/public
-
-# Create directory for shared lib
-RUN mkdir -p /app/node_modules/shared
 
 ENV PORT=8080
 EXPOSE 8080
