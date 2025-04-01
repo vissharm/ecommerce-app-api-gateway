@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 // Proxy configuration
 const proxyConfig = {
   '/api/notifications': {
-    target: 'http://localhost:3003/api/notifications',
+    target: process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3003/api/notifications',
     changeOrigin: true,
     onProxyReq: (proxyReq, req) => {
       if (req.headers.authorization) {
@@ -25,7 +25,7 @@ const proxyConfig = {
     }
   },
   '/api/orders': {
-    target: 'http://localhost:3002/api/orders',
+    target: process.env.ORDER_SERVICE_URL || 'http://localhost:3002/api/orders',
     changeOrigin: true,
     onProxyReq: (proxyReq, req) => {
       if (req.headers.authorization) {
@@ -34,7 +34,7 @@ const proxyConfig = {
     }
   },
   '/api/products': {
-    target: 'http://localhost:3004/api/products',
+    target: process.env.PRODUCT_SERVICE_URL || 'http://localhost:3004/api/products',
     changeOrigin: true,
     onProxyReq: (proxyReq, req) => {
       if (req.headers.authorization) {
@@ -43,7 +43,7 @@ const proxyConfig = {
     }
   },
   '/api/users': {
-    target: 'http://localhost:3001/api/users',
+    target: process.env.USER_SERVICE_URL || 'http://localhost:3001/api/users',
     changeOrigin: true,
     logLevel: 'debug',
     onProxyReq: (proxyReq, req) => {
@@ -54,7 +54,7 @@ const proxyConfig = {
   },
 
   '/socket.io': {  // Changed from /websocket to /socket.io
-    target: 'http://localhost:3003',
+    target: process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3003',
     changeOrigin: true,
     ws: true,
     logLevel: 'debug',

@@ -1,14 +1,14 @@
 # Stage 1: Build frontend
 FROM node:14 as frontend-builder
-WORKDIR /frontend
+WORKDIR /app
 # Copy frontend package files
 COPY frontend/package*.json ./
-RUN npm install --legacy-peer-deps    # Added legacy-peer-deps flag
+RUN npm install --legacy-peer-deps
 
 # Copy frontend source
 COPY frontend/ ./
 # Build frontend with additional error output
-RUN npm run build || (cat /frontend/npm-debug.log && exit 1)
+RUN npm run build || (cat /npm-debug.log && exit 1)
 
 # Stage 2: API Gateway
 FROM node:14
@@ -21,12 +21,12 @@ RUN npm install
 # Copy API Gateway source
 COPY api-gateway/ ./
 
-# Create directory for frontend build
-RUN mkdir -p /app/public
+# Create frontend directory structure
+RUN mkdir -p ../frontend
 
 # Copy built frontend from builder stage
-COPY --from=frontend-builder /frontend/build /app/public
+COPY --from=frontend-builder /app/build ../frontend/build
 
-ENV PORT=8080
-EXPOSE 8080
+ENV PORT=3000
+EXPOSE 3000
 CMD ["node", "index.js"]
